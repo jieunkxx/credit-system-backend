@@ -1,1 +1,1 @@
-# credit-system-backend
+# project-assignment-class
