@@ -5,7 +5,7 @@ import cors from 'cors';
 import express from 'express';
 import { Request, Response } from 'express';
 import routes from './routes/index';
-import prisma from '../prisma';
+import prisma from './prisma';
 
 const PORT = process.env.PORT || 10010;
 

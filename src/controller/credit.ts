@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CreditDTO, CustomRequest } from '../types/types';
+import { CreditDTO, CustomRequest } from 'types';
 import { creditService } from '../services';
 
 const addCredit = async (req: CustomRequest<CreditDTO>, res: Response) => {

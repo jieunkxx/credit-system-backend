@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../prisma';
 import moment from 'moment';
 import { UserDB, CreditDTO, CreditDB, CreditValue } from 'types';
 import {
@@ -7,7 +7,6 @@ import {
   updateBuilder,
   updateBetweenBuilder,
 } from './queryBuilder';
-const prisma = new PrismaClient();
 
 function isEmpty(obj: {}) {
   return Object.keys(obj).length === 0;

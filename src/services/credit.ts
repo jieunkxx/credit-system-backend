@@ -1,10 +1,7 @@
-import { Request, Response } from 'express';
 import moment from 'moment';
-import { Credit } from '../common/class';
 import errorGenerator from '../utils/errorGenerator';
-import { CreditDTO, CreditDB, CustomRequest, UserDB, CustomError } from 'types';
+import { CreditDTO, CreditDB } from 'types';
 import { creditModel } from '../models';
-import credit from 'src/models/credit';
 
 function isEmpty(obj: any) {
   return Object.keys(obj).length === 0;

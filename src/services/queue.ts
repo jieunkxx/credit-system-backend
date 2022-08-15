@@ -1,14 +1,40 @@
-import { Request, Response } from 'express';
-import { QueueDTO, CustomRequest } from '../types/types';
+import errorGenerator from '../utils/errorGenerator';
+import { QueueDTO, CustomRequest, QueueItem } from 'types';
 import { queueModel } from '../models';
 
-const enqueue = async () => {};
+const isTableEmpty = async (table: string) => {
+  return await queueModel.checkTableNotEmpty(table);
+};
 
-const dequeue = async () => {};
+const enqueue = async (item: any) => {
+  await queueModel.enqueue(item);
+};
 
-const pop = async (index: number) => {};
+// get first in and remove
+const dequeue = async () => {
+  if (await isTableEmpty('queue')) {
+    const msg = 'TABLE_EMPTY';
+    errorGenerator({ message: msg, statusCode: 400 });
+  }
+  return await queueModel.dequeue();
+};
 
-const getLength = async () => {};
+const pop = async (index: number) => {
+  if (await isTableEmpty('queue')) {
+    const msg = 'TABLE_EMPTY';
+    errorGenerator({ message: msg, statusCode: 400 });
+  }
+  return await queueModel.pop;
+};
+
+const getLength = async () => {
+  if (await isTableEmpty('queue')) {
+    return 0;
+  } else {
+    const res = await queueModel.getLength();
+    return res;
+  }
+};
 
 export default {
   enqueue,

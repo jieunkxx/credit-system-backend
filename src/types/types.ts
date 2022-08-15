@@ -51,6 +51,24 @@ export interface CreditDTO {
   date: Date;
 }
 
+export interface CreditRouter {
+  addCredit(
+    req: CustomRequest<CreditDTO>,
+    res: Response
+  ): Promise<Response | void>;
+  useCredit(
+    req: CustomRequest<CreditDTO>,
+    res: Response
+  ): Promise<Response | void>;
+  getAvailableCredit(
+    req: CustomRequest<CreditDTO>,
+    res: Response
+  ): Promise<Response | void>;
+  refundCredit(
+    req: CustomRequest<CreditDTO>,
+    res: Response
+  ): Promise<Response | void>;
+}
 export interface Credit {
   //items: CreditItem;
   add(credit: CreditValue, createdAt: CreditCreatedAt): void;
@@ -59,12 +77,20 @@ export interface Credit {
   refund(credit: CreditValue, date: Date): void;
 }
 
+export type QueueIndex = number;
+export type QueueItemKey = Record<string, any>;
+export type QueueValue = any;
+export type QueueItem = Map<QueueItemKey, QueueValue>;
+
+export type QueueArrayItem = any;
+export type QueueArray = Array<QueueArrayItem>;
+
 export interface QueueDTO {
   index: number;
 }
 export interface Queue {
-  enqueue(item: any): void;
-  dequeue(): any;
-  pop(index: number): any;
+  enqueue(item: QueueArrayItem): void;
+  dequeue(): QueueArrayItem;
+  pop(index: number): QueueArrayItem;
   get_length(): number;
 }

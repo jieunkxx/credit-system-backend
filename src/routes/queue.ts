@@ -1,19 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { asyncWrap } from '../async-wrap';
-import { PathRouter } from '../common/class';
+import { PathRouter } from '../class/common';
 import { CustomRequest, QueueDTO } from '../types/types';
 import { queueController } from '../controller';
 
 class QueueRouter extends PathRouter {
   constructor() {
-    const path = '/credit';
+    const path = '/queue';
     const router = Router();
     super(path, router);
-
-    router.post('/', asyncWrap(this.enqueue));
-    router.patch('/use', asyncWrap(this.dequeue));
-    router.get('/', asyncWrap(this.pop));
-    router.patch('/refund', asyncWrap(this.getLength));
+    router.post('/enqueue', asyncWrap(this.enqueue));
+    router.delete('/dequeue', asyncWrap(this.dequeue));
+    router.post('/pop', asyncWrap(this.pop));
+    router.get('/getLength', asyncWrap(this.getLength));
   }
 
   async enqueue(req: Request, res: Response) {
