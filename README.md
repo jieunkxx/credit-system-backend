@@ -55,7 +55,7 @@
 #### Queue Class
 - Create Queue Class using Node and Linked List
   - constructor queue with head: Node<T>, tail: Node<T>, length: number
-- Methods: `enqueue()`, `dequeue()`, `pop()`, `get_length()`
+- Methods: `enqueue(item)`, `dequeue()`, `pop(index)`, `get_length()`
   - enqueue(item)
     - insert item at the end of the queue
     - update head, tail with the number of items left
