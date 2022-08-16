@@ -4,13 +4,13 @@ import { CreditDTO, CreditDB } from 'types';
 import { creditModel } from '../models';
 
 function isEmpty(obj: any) {
-  return Object.keys(obj).length === 0;
+  return Object.keys(obj || {}).length === 0;
 }
 
 // does not include start date
-const getExpiryDate = (createdAt: Date, expiresAt: Date) => {
+const isExpired = (createdAt: Date, expiresAt: Date) => {
   const validForUnit = moment(expiresAt).diff(moment(createdAt), 'days');
-  return validForUnit < 90;
+  return validForUnit > 90;
 };
 
 const addCredit = async (userId: number, creditDTO: CreditDTO) => {
@@ -49,36 +49,42 @@ const useCredit = async (userId: number, creditDTO: CreditDTO) => {
     const msg = 'AVAILABLE_CREDIT_DOES_NOT_EXIST';
     errorGenerator({ message: msg, statusCode: 400 });
   }
-  let currVal = 0;
-  let usedUpAt = 0;
-  const creditIdToUse: number[] = [];
-  validCredits.forEach((el: CreditDB, index: number) => {
-    currVal += el.value;
-    if (currVal >= (creditDTO.value as number)) {
+  let usedUpAt = -1;
+  let targetVal = creditDTO.value as number;
+  validCredits.every(async (el: CreditDB, index: number) => {
+    if (el.value > targetVal) {
+      await creditModel.useCredit(el.id, 0, el.value - targetVal);
       usedUpAt = index;
-    } else {
-      creditIdToUse.push(el.id);
+      return false;
+    } else if (el.value === targetVal) {
+      await creditModel.useCredit(el.id, 1, 0);
+      usedUpAt = index;
+      return false;
     }
+    targetVal = targetVal - el.value;
+    await creditModel.useCredit(el.id, 1, 0);
+    return true;
   });
   if (usedUpAt === 0) {
     const msg = 'AVAILABLE_CREDIT_NOT_ENOUGH BY ';
     errorGenerator({ message: msg, statusCode: 400 });
   }
-  creditIdToUse.forEach(
-    async (value: number) => await creditModel.useCredit(value)
-  );
 };
 
 const refundCredit = async (userId: number, creditDTO: CreditDTO) => {
   const today = new Date();
   let msg = null;
-  if (getExpiryDate(creditDTO.date, today))
+  const credit = await creditModel.getCreditIdByDate(userId, creditDTO.date);
+  if (isExpired(creditDTO.date, today)) {
     msg = 'REFUND_FAILED: CREDIT EXPIRED';
-  if (isEmpty(creditModel.getCreditIdByDate(userId, creditDTO.date)))
+  } else if (isEmpty(credit)) {
     msg = 'REFUND_FAILED: CREDIT NOT EXIST';
+  } else if (credit.value < (creditDTO.value as number)) {
+    msg = 'NOT_ENOUGH_CREDIT';
+  }
   if (msg !== null) errorGenerator({ message: msg, statusCode: 400 });
 
-  await creditModel.refundCredit(userId, creditDTO);
+  await creditModel.refundCredit(userId, credit.id, creditDTO);
 };
 
 export default {

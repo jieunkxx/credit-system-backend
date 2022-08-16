@@ -4,6 +4,7 @@ import {
   CustomRequest,
   CreditDTO,
   QueueDTO,
+  UserParams,
 } from '../src/types/types';
 
 export function asyncWrap(
@@ -22,12 +23,22 @@ export function asyncWrap(
 
 export function asyncWrapCredit(
   asyncController: (
-    req: CustomRequest<CreditDTO>,
+    req: Request<
+      UserParams,
+      Record<string, unknown>,
+      CreditDTO,
+      Record<string, unknown>
+    >,
     res: Response
   ) => Promise<Response | void>
 ) {
   return async (
-    req: CustomRequest<CreditDTO>,
+    req: Request<
+      UserParams,
+      Record<string, unknown>,
+      CreditDTO,
+      Record<string, unknown>
+    >,
     res: Response,
     next: NextFunction
   ) => {

@@ -1,38 +1,67 @@
 import { Request, Response } from 'express';
-import { CreditDTO, CustomRequest } from 'types';
+import { UserParams, CreditDTO, CustomRequest } from 'types';
 import { creditService } from '../services';
 
-const addCredit = async (req: CustomRequest<CreditDTO>, res: Response) => {
-  const userId = req.user?.id;
+const addCredit = async (
+  req: Request<
+    UserParams,
+    Record<string, unknown>,
+    CreditDTO,
+    Record<string, unknown>
+  >,
+  res: Response
+) => {
+  const userId = req.params.id || 1;
   const creditDTO = req.body;
-  await creditService.addCredit(userId as number, creditDTO);
+  await creditService.addCredit(Number(userId), creditDTO);
   res.status(200).json({ message: 'credit added' });
 };
 
-const useCredit = async (req: CustomRequest<CreditDTO>, res: Response) => {
-  const userId = req.user?.id;
+const useCredit = async (
+  req: Request<
+    UserParams,
+    Record<string, unknown>,
+    CreditDTO,
+    Record<string, unknown>
+  >,
+  res: Response
+) => {
+  const userId = req.params.id || 1;
   const creditDTO = req.body;
-  await creditService.useCredit(userId as number, creditDTO);
+  await creditService.useCredit(Number(userId), creditDTO);
   res.status(200).json({ message: 'credit used' });
 };
 
 const getAvailableCredit = async (
-  req: CustomRequest<CreditDTO>,
+  req: Request<
+    UserParams,
+    Record<string, unknown>,
+    CreditDTO,
+    Record<string, unknown>
+  >,
   res: Response
 ) => {
-  const userId = req.user?.id;
+  const userId = req.params.id || 1;
   const creditDTO = req.body;
   const validCredits = await creditService.getAvailableCredit(
-    userId as number,
+    Number(userId),
     creditDTO
   );
   res.status(200).json({ data: validCredits });
 };
 
-const refundCredit = async (req: CustomRequest<CreditDTO>, res: Response) => {
-  const userId = req.user?.id;
+const refundCredit = async (
+  req: Request<
+    UserParams,
+    Record<string, unknown>,
+    CreditDTO,
+    Record<string, unknown>
+  >,
+  res: Response
+) => {
+  const userId = req.params.id || 1;
   const creditDTO = req.body;
-  await creditService.refundCredit(userId as number, creditDTO);
+  await creditService.refundCredit(Number(userId), creditDTO);
   res.status(200).json({ message: 'credit refunded' });
 };
 

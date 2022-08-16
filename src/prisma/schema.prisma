@@ -21,6 +21,7 @@ model credits {
   user_id    Int
   value      Int?
   created_at DateTime? @default(dbgenerated("(cast(now() as date))")) @db.Date
+  used       Boolean?  @default(false)
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "credits_ibfk_1")
 
   @@index([user_id], map: "user_id")

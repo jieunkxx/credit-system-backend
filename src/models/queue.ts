@@ -18,11 +18,10 @@ const checkTableNotEmpty = async (table: string) => {
   const [isNotEmpty]: any = await prisma.$queryRawUnsafe(`
     SELECT EXISTS (SELECT 1 FROM ${table}) ${table}
   `);
-  console.log(isNotEmpty);
   return /^1/.test(isNotEmpty[table]);
 };
 
-const getItem = async () => {
+const getItems = async () => {
   const query = `SELECT * FROM queue`;
   return await prisma.$queryRawUnsafe(query);
 };
@@ -39,12 +38,12 @@ const dequeue = async () => {
   prisma.$queryRawUnsafe(query);
 };
 
-const pop = async (index: QueueIndex) => {
-  const items = await getItem();
+const pop = async (index: number) => {
+  const items = await getItems();
 };
 
 const getLength = async () => {
-  const items: any = await getItem();
+  const items = await getItems();
   const query = ``;
   const res = prisma.$queryRawUnsafe(query);
   return res;

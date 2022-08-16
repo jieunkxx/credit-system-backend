@@ -14,8 +14,8 @@ const convertObjKeysToSnakeCase = (obj: any) => {
 
 const buildSqlParamsForInsert = (obj: any) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
-  const setParams: Array<any> = [];
-  const setValues: Array<any> = [];
+  const setParams: Array<string> = [];
+  const setValues: Array<string> = [];
   const entries = Object.entries(convertedObj);
   entries.forEach(entry => {
     setParams.push(`${entry[0]}`);
@@ -40,7 +40,7 @@ const buildSqlParamsForUpdate = (obj: any) => {
 
 const buildSqlParamsForDelete = (obj: any, condition: string | null) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
-  const resultArr: Array<any> = [];
+  const resultArr: Array<string> = [];
   const entries = Object.entries(convertedObj);
   entries.forEach(entry => {
     resultArr.push(`${entry[0]} = "${entry[1]}"`);

@@ -1,5 +1,6 @@
 import * as types from 'types';
 import moment from 'moment';
+import errorGenerator from '../utils/errorGenerator';
 
 const generateDateVariable = (date: Date) => {
   return moment(date).format('YYYYMMDD');
@@ -10,17 +11,6 @@ const getExpiryDate = (createdAt: Date, expiresAt: Date) => {
   return validForUnit < 90;
 };
 
-// const getDaysDiff = (start_date, end_date, date_format = 'YYYY-MM-DD') => {
-//   const getDateAsArray = date => {
-//     return moment(date.split(/\D+/), date_format);
-//   };
-//   return getDateAsArray(end_date).diff(getDateAsArray(start_date), 'days') + 1;
-// };
-
-/*
-Credit
-Represents a Credit with items
-*/
 export class Credit implements types.Credit {
   items: types.CreditItem;
 
@@ -44,6 +34,9 @@ export class Credit implements types.Credit {
 
   // MODIFIES: this
   // EFFECTS: decrement credit value by credit
+  //          Has enough credit: current credit >= : return 1;
+  //          REFUND PARTIALLY: return (credit - current credit);
+  //          REFUND FAILED: return -1;
   use(credit: types.CreditValue, date: Date) {
     if (this.items.has({ date: date })) {
       const currVal = this.items.get({ date: date });
@@ -54,26 +47,23 @@ export class Credit implements types.Credit {
       const currVal = Number(this.items.get(key));
       if (currVal >= credit) {
         this.items.set(key, currVal - credit);
-        res = 0;
+        return 1;
       } else {
-        this.items.delete(key);
-        res = 2;
+        errorGenerator({ message: 'NOT_ENOUGH_CREDIT', statusCode: 400 });
       }
     }
-
-    return;
+    return 0;
   }
 
   // EFFECTS: return available credit by target date
   get_available(targetDate: Date) {
-    //const res: Array<types.Credit> = [];
-    let res = 0;
+    let credit = 0;
     for (const key of this.items.keys()) {
       if (getExpiryDate(key.date, targetDate)) {
-        res = res + Number(this.items.get(key));
+        credit = credit + Number(this.items.get(key));
       }
     }
-    return res;
+    return credit;
   }
 
   // EFFECTS: return available credit by target date
@@ -82,7 +72,6 @@ export class Credit implements types.Credit {
     const newMap = new Map(
       [...this.items].filter(([k, v]) => getExpiryDate(k.date, targetDate))
     );
-    console.log(newMap);
     return newMap;
   }
 

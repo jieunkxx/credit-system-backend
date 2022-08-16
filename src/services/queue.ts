@@ -7,7 +7,7 @@ const isTableEmpty = async (table: string) => {
 };
 
 const enqueue = async (item: any) => {
-  await queueModel.enqueue(item);
+  return await queueModel.enqueue(item);
 };
 
 // get first in and remove

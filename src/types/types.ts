@@ -46,7 +46,11 @@ export interface CreditDB {
   createdAt: CreditCreatedAt;
 }
 
+export interface UserParams {
+  id: string;
+}
 export interface CreditDTO {
+  userId: number;
   value?: CreditValue;
   date: Date;
 }
@@ -80,17 +84,19 @@ export interface Credit {
 export type QueueIndex = number;
 export type QueueItemKey = Record<string, any>;
 export type QueueValue = any;
-export type QueueItem = Map<QueueItemKey, QueueValue>;
+export type QueueItem<T> = T;
 
 export type QueueArrayItem = any;
 export type QueueArray = Array<QueueArrayItem>;
 
 export interface QueueDTO {
   index: number;
+  item: any;
 }
-export interface Queue {
-  enqueue(item: QueueArrayItem): void;
-  dequeue(): QueueArrayItem;
-  pop(index: number): QueueArrayItem;
+
+export interface Queue<T> {
+  enqueue(item: T): void;
+  dequeue(): T;
+  pop(index: number): T;
   get_length(): number;
 }
