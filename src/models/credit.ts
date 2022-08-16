@@ -24,9 +24,7 @@ const addCredit = async (userId: UserDB['id'], creditDTO: CreditDTO) => {
     value: creditDTO.value as number,
     created_at: moment(creditDTO.date).format('YYYY-MM-DD'),
   };
-  console.log(data);
   const query = insertBuilder(data, 'credits');
-  console.log(query);
   await prisma.$queryRawUnsafe(query);
 };
 
