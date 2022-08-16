@@ -1,8 +1,8 @@
-import { CustomError, CustomErrorSetup } from '../common/types';
+import { CustomError } from '../common/class';
+import * as type from 'types';
 
-const errorGenerator = (obj: CustomErrorSetup) => {
-  const error: CustomError = new Error(obj.message);
-  error.statusCode = obj.statusCode;
+const errorGenerator = (obj: type.CustomErrorSetup) => {
+  const error: type.CustomError = new CustomError(obj.message, obj.statusCode);
   throw error;
 };
 
