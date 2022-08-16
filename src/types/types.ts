@@ -42,8 +42,8 @@ export type CreditItem = Map<CreditItemKey, CreditValue>;
 export interface CreditDB {
   id: number;
   user_id: number;
-  value: CreditValue;
-  createdAt: CreditCreatedAt;
+  value: number;
+  createdAt: Date;
 }
 
 export interface UserParams {

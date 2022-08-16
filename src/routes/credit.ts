@@ -8,20 +8,17 @@ import { creditController } from '../controller';
 /**
  * @swagger
  * paths:
- *  /:id/credit/add:
+ *  /credit/{id}/add:
  *    post:
  *      tag:
  *      - credit
  *      description: add credit to user
  *      parameters:
- *      - in: params
- *        name: userId
+ *      - in: path
+ *        name: id
  *        required: true
- *        schema:
- *          type: string
- *          properties:
- *            id:
- *            example: 1
+ *        type: integer
+ *        description: "userId"
  *      - in: body
  *        name: creditDTO
  *        required: true
@@ -37,26 +34,17 @@ import { creditController } from '../controller';
  *      responses:
  *        200:
  *          description: success
- *          schema:
- *            type: object
- *            properties:
- *              message:
- *                type: string
- *                example: "credit added"
- *  /:id/credit/use:
+ *  /credit/{id}/use:
  *    patch:
  *      tag:
  *      - credit
  *      description: use credit if there is valid. used up from old
  *      parameters:
- *      - in: params
- *        name: userId
+ *      - in: path
+ *        name: id
  *        required: true
- *        schema:
- *          type: string
- *          properties:
- *            id:
- *            example: 1
+ *        type: integer
+ *        description: "userId"
  *      - in: body
  *        name: creditDTO
  *        required: true
@@ -72,26 +60,17 @@ import { creditController } from '../controller';
  *      responses:
  *        200:
  *          description: success
- *          schema:
- *            type: object
- *            properties:
- *              message:
- *                type: string
- *                example: "credit added"
- *  /:id/credit/:
- *    get:
+ *  /credit/{id}/get:
+ *    post:
  *      tag:
  *      - credit
- *      description: get available credit
+ *      description: get available credit of user
  *      parameters:
- *      - in: params
- *        name: userId
+ *      - in: path
+ *        name: id
  *        required: true
- *        schema:
- *          type: string
- *          properties:
- *            id:
- *            example: 1
+ *        type: integer
+ *        description: "userId"
  *      - in: body
  *        name: creditDTO
  *        required: true
@@ -101,41 +80,21 @@ import { creditController } from '../controller';
  *            date:
  *              type: Date
  *              example: '2022-08-15'
- *            value:
- *              type: integer
- *              example: 1
  *      responses:
  *        200:
  *          description: success
- *          schema:
- *            type: object
- *            properties:
- *              id:
- *                type: integer
- *                example: 1
- *              user_id:
- *                type: integer
- *                example: 1
- *              value:
- *                type: integer
- *                example: 1
- *              created_at:
- *                type: date
- *                example: '2022-08-15'
- *  /:id/credit/refund:
+ *
+ *  /credit/{id}/refund:
  *    patch:
  *      tag:
  *      - credit
  *      description: refund credit
  *      parameters:
- *      - in: params
- *        name: userId
+ *      - in: path
+ *        name: id
  *        required: true
- *        schema:
- *          type: string
- *          properties:
- *            id:
- *            example: 1
+ *        type: integer
+ *        description: "userId"
  *      - in: body
  *        name: creditDTO
  *        required: true
@@ -151,25 +110,22 @@ import { creditController } from '../controller';
  *      responses:
  *        200:
  *          description: success
- *          schema:
- *            type: object
- *            properties:
- *              message:
- *                type: string
- *                example: "credit refunded"
  */
 
 class CreditRouter extends PathRouter {
   constructor() {
-    const path = '/:id/credit';
+    const path = '/credit';
     const router = Router();
     super(path, router);
-    router.post('/add', asyncWrapCredit(this.addCredit));
-    router.patch('/use', asyncWrapCredit(this.useCredit));
-    router.get('/', asyncWrapCredit(this.getAvailableCredit));
-    router.patch('/refund', asyncWrapCredit(this.refundCredit));
+    router.post('/:id/add', asyncWrapCredit(this.addCredit));
+    router.patch('/:id/use', asyncWrapCredit(this.useCredit));
+    router.post('/:id/get', asyncWrapCredit(this.getAvailableCredit));
+    router.patch('/:id/refund', asyncWrapCredit(this.refundCredit));
   }
 
+  // REQUIRES:
+  // MODIFIES: this
+  // EFFECTS: add credit and date
   async addCredit(
     req: Request<
       type.UserParams,
@@ -182,6 +138,11 @@ class CreditRouter extends PathRouter {
     await creditController.addCredit(req, res);
   }
 
+  // MODIFIES: this
+  // EFFECTS: decrement credit value by credit
+  //          Has enough credit: current credit >= : return 1;
+  //          REFUND PARTIALLY: return (credit - current credit);
+  //          REFUND FAILED: return -1;
   async useCredit(
     req: Request<
       type.UserParams,
@@ -193,6 +154,8 @@ class CreditRouter extends PathRouter {
   ) {
     await creditController.useCredit(req, res);
   }
+
+  // EFFECTS: return available credit by target date
   async getAvailableCredit(
     req: Request<
       type.UserParams,
@@ -204,6 +167,12 @@ class CreditRouter extends PathRouter {
   ) {
     await creditController.getAvailableCredit(req, res);
   }
+
+  // MODIFIES: this
+  // EFFECTS: return REFUND STATUS
+  //          REFUND ALL: return 0;
+  //          REFUND PARTIALLY: return (credit - current credit);
+  //          REFUND FAILED: return -1;
   async refundCredit(
     req: Request<
       type.UserParams,
