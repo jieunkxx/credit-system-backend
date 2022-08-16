@@ -48,7 +48,9 @@ const getAvailableCredit = async (userId: UserDB['id'], date: Date) => {
     WHERE 
       user_id=${userId} 
     AND
-      created_at > (Date('${date}') - INTERVAL 90 DAY) 
+      created_at > (Date('${date}') - INTERVAL 90 DAY)
+    AND
+      used='0'
     ORDER BY created_at ASC
   `;
   const res: Array<CreditDB> = await prisma.$queryRawUnsafe(query);
