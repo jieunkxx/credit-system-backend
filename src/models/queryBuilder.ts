@@ -2,8 +2,10 @@ const camelToUnderscore = (key: string) => {
   return key.replace(/([A-Z])/g, '_$1').toLowerCase();
 };
 
-const convertObjKeysToSnakeCase = (obj: any) => {
-  const newObj: any = {};
+const convertObjKeysToSnakeCase = (obj: {
+  [key in string]: number | string | Date;
+}) => {
+  const newObj: { [key in string]: number | string | Date } = {};
   for (const camel in obj) {
     if (obj[camel] !== null) {
       newObj[camelToUnderscore(camel)] = obj[camel];
@@ -12,7 +14,9 @@ const convertObjKeysToSnakeCase = (obj: any) => {
   return newObj;
 };
 
-const buildSqlParamsForInsert = (obj: any) => {
+const buildSqlParamsForInsert = (obj: {
+  [key in string]: number | string | Date;
+}) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
   const setParams: Array<string> = [];
   const setValues: Array<string> = [];
@@ -28,7 +32,9 @@ const buildSqlParamsForInsert = (obj: any) => {
   return setParams + ') VALUES (' + setValues;
 };
 
-const buildSqlParamsForUpdate = (obj: any) => {
+const buildSqlParamsForUpdate = (obj: {
+  [key in string]: number | string | Date;
+}) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
   const resultArr: Array<any> = [];
   const entries = Object.entries(convertedObj);
@@ -38,7 +44,10 @@ const buildSqlParamsForUpdate = (obj: any) => {
   return resultArr.join(', ');
 };
 
-const buildSqlParamsForDelete = (obj: any, condition: string | null) => {
+const buildSqlParamsForDelete = (
+  obj: { [key in string]: number | string | Date },
+  condition: string | null
+) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
   const resultArr: Array<string> = [];
   const entries = Object.entries(convertedObj);
@@ -51,7 +60,10 @@ const buildSqlParamsForDelete = (obj: any, condition: string | null) => {
   return resultArr;
 };
 
-export const insertBuilder = (data: any, table: string) => {
+export const insertBuilder = (
+  data: { [key in string]: number | string | Date },
+  table: string
+) => {
   const query = `
     INSERT INTO ${table} (
       ${buildSqlParamsForInsert(data)}
@@ -60,7 +72,11 @@ export const insertBuilder = (data: any, table: string) => {
   return query;
 };
 
-export const updateBuilder = (inquiryId: number, data: any, table: string) => {
+export const updateBuilder = (
+  inquiryId: number,
+  data: { [key in string]: number | string | Date },
+  table: string
+) => {
   const query = `
     UPDATE ${table} SET ${buildSqlParamsForUpdate(
     data
@@ -70,7 +86,7 @@ export const updateBuilder = (inquiryId: number, data: any, table: string) => {
 
 export const updateBetweenBuilder = (
   inquiryId: number,
-  data: any,
+  data: { [key in string]: number | string | Date },
   table: string
 ) => {
   const query = `
@@ -83,7 +99,7 @@ export const updateBetweenBuilder = (
 };
 
 export const deleteBuilder = (
-  data: any,
+  data: { [key in string]: number | string | Date },
   table: string,
   condition: string | null
 ) => {

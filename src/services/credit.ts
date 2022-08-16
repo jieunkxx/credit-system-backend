@@ -3,7 +3,7 @@ import errorGenerator from '../utils/errorGenerator';
 import { CreditDTO, CreditDB } from 'types';
 import { creditModel } from '../models';
 
-function isEmpty(obj: any) {
+function isEmpty(obj: Record<string, any>) {
   return Object.keys(obj || {}).length === 0;
 }
 

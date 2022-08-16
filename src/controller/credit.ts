@@ -11,7 +11,7 @@ const addCredit = async (
   >,
   res: Response
 ) => {
-  const userId = req.params.id || 1;
+  const userId = req.params.id;
   const creditDTO = req.body;
   await creditService.addCredit(Number(userId), creditDTO);
   res.status(200).json({ message: 'credit added' });
@@ -26,7 +26,7 @@ const useCredit = async (
   >,
   res: Response
 ) => {
-  const userId = req.params.id || 1;
+  const userId = req.params.id;
   const creditDTO = req.body;
   await creditService.useCredit(Number(userId), creditDTO);
   res.status(200).json({ message: 'credit used' });
