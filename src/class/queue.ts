@@ -76,8 +76,15 @@ export class Queue<T> {
     if (this.head == null) {
       errorGenerator({ message: 'QUEUE_IS_EMPTY', statusCode: 400 });
     }
+    if (this.get_length() === 1) {
+      const res = this.head;
+      this.head = null;
+      this.length--;
+      return res?.item;
+    }
     if (index === 0) {
       this.head = this.head?.next as Node<T>;
+      this.length--;
       return this.head.item;
     }
     const prev = this.getAt(index - 1);

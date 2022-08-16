@@ -5,6 +5,7 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import { Request, Response } from 'express';
 import { PathRouter } from './common/class';
+import swaggerDocs from '../lib/config/swagger';
 
 const PORT = process.env.PORT || 10010;
 
@@ -21,6 +22,7 @@ export class ExpressApp {
     this.app = express();
     this.app.use(cors(corsOption));
     this.app.use(express.json());
+    this.app.use(swaggerDocs);
     this.app.use(express.urlencoded({ extended: false }));
     this.app.get('/ping', (req: Request, res: Response) => {
       res.json({ message: 'pong' });

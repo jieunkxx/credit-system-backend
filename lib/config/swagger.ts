@@ -17,7 +17,7 @@ const options = {
     host: `localhost:${PORT}`,
     basePath: '/',
   },
-  apis: [resolve(__dirname, '../src/routes/*.ts')],
+  apis: [resolve(__dirname, '../../src/routes/*.ts')],
 };
 
 const specs = swaggerJsdoc(options);
