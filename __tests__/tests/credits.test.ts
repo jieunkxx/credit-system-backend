@@ -7,10 +7,10 @@ import creditRouter from '../../src/routes/credit';
 import insertQueryFactory from '../data/insertQueryFactory';
 import * as mock from '../data/mock';
 const dateGenerator = (date: Date | string) => {
-  return moment(date).format('YYYY-MM-DD');
+  return new Date(date);
 };
 
-const createCreditDTO = (value: number, date: string) => {
+const createCreditDTO = (value: number, date: Date | string) => {
   return { value: value, date: dateGenerator(date) };
 };
 
