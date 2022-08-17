@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 import cors from 'cors';
 import express, { Express } from 'express';

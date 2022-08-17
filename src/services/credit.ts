@@ -8,7 +8,7 @@ function isEmpty(obj: Record<string, any>) {
 }
 
 // does not include start date
-const isExpired = (createdAt: Date, expiresAt: Date) => {
+const isExpired = (createdAt: Date | string, expiresAt: Date | string) => {
   const validForUnit = moment(expiresAt).diff(moment(createdAt), 'days');
   return validForUnit > 90;
 };

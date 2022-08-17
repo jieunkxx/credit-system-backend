@@ -10,7 +10,7 @@ const getCreditById = async (creditId: number) => {
   return res[0];
 };
 
-const getCreditIdByDate = async (userId: number, date: Date) => {
+const getCreditIdByDate = async (userId: number, date: Date | string) => {
   const query = `
     SELECT * FROM credits WHERE created_at='${date}' AND user_id=${userId}
   `;
@@ -42,7 +42,10 @@ const addCreditOnExist = async (
   await prisma.$queryRawUnsafe(query);
 };
 
-const getAvailableCredit = async (userId: UserDB['id'], date: Date) => {
+const getAvailableCredit = async (
+  userId: UserDB['id'],
+  date: Date | string
+) => {
   const query = `
     SELECT * FROM credits 
     WHERE 

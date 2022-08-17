@@ -3,11 +3,9 @@ import moment from 'moment';
 import { UserDB, CreditDTO, CreditDB } from '../../src/types/types';
 import creditModel from '../../src/models/credit';
 import creditService from '../../src/services/credit';
+import creditRouter from '../../src/routes/credit';
 import insertQueryFactory from '../data/insertQueryFactory';
-import { moveMessagePortToContext } from 'worker_threads';
 import * as mock from '../data/mock';
-import credit from '../../src/models/credit';
-import e from 'express';
 const dateGenerator = (date: string) => {
   return moment(date).format('YYYY-MM-DD');
 };
