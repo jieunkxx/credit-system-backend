@@ -13,12 +13,12 @@ const dateGenerator = (date: string) => {
 };
 
 const createCreditDTO = (value: number, date: string) => {
-  return { value: value, created_at: dateGenerator(date) };
+  return { value: value, date: dateGenerator(date) };
 };
 
 describe('credit', () => {
   let query, mutate, testClient;
-  let userId, creditDTO, value, createdAt;
+  let userId: number, creditDTO, value: number, createdAt: Date | string;
   beforeAll(async () => {
     testClient = getTestClient();
     query = testClient.query;
@@ -158,4 +158,7 @@ describe('credit', () => {
       }
     });
   });
+  afterAll(async () => {
+    await testClient.truncate(['credits', 'users']);
+  }
 });

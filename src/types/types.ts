@@ -50,9 +50,8 @@ export interface UserParams {
   id: string;
 }
 export interface CreditDTO {
-  userId: number;
   value?: CreditValue;
-  date: Date;
+  date: Date | string;
 }
 
 export interface CreditRouter {
