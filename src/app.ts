@@ -4,7 +4,7 @@ require('dotenv').config();
 import cors from 'cors';
 import express, { Express } from 'express';
 import { Request, Response } from 'express';
-import { PathRouter } from './common/class';
+import { PathRouter } from './class/common';
 import swaggerDocs from '../lib/config/swagger';
 
 const PORT = process.env.PORT || 10010;
