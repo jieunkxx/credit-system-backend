@@ -87,7 +87,7 @@
 ### Unit Testing
 - Run tests
   ```bash
-  $npx jest
+  $npm run test
   ```
   - Unit Tests for credit system has not been implemented.
   - Unit Tests for Queue has been completed.
