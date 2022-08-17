@@ -89,7 +89,7 @@
   ```bash
   $npm run test
   ```
-  - Unit Tests for credit system has not been implemented.
+  - Unit Tests for credit system is being updated.
   - Unit Tests for Queue has been completed.
    <br />
 #### tech stacks
