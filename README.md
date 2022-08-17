@@ -55,18 +55,22 @@
 #### Queue Class
 - Create Queue Class using Node and Linked List
   - constructor queue with head: Node<T>, tail: Node<T>, length: number
+   <br />
 - Methods: `enqueue(item)`, `dequeue()`, `pop(index)`, `get_length()`
+
   - enqueue(item)
     - insert item at the end of the queue
-    - update head, tail with the number of items left
+    - update head, tail in accordance with the number of items left
     - update length (length++)
     - Time complexity: O(1)
+     <br />
   - dequeue()
-    - get item at the begging of the queue and remove it
+    - get item at the beginning of the queue and remove it
     - update head, tail in accordance with the number of items left
     - if queue is empty, throw a custom error
     - update length (length--)
     - Time complexity: O(1)
+     <br />
   - pop(index)
     - returns item at the indexed position and removes it
     - traverse queue until indexed position returned. 
@@ -74,10 +78,12 @@
     - if queue is empty or item does not exist at the postion, throw a custom error
     - update length (length--)
     - return queue
-    - Time complexity: O(n)    
+    - Time complexity: O(n)
+     <br />
   - get_length()
     - returns this.length
     - Time complexity: O(1)
+     <br />
 ### Unit Testing
 - Run tests
   ```bash
@@ -85,6 +91,6 @@
   ```
   - Unit Tests for credit system has not been implemented.
   - Unit Tests for Queue has been completed.
-  
+   <br />
 #### tech stacks
 <img width="80" height="20" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" /> <img width="80"  height="20" src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" /> <img width="80"  height="20" src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" /> <img width="80" height="20" src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" /> <img width="80" height="20" src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" /> <img width="80" height="20" src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white<img src=" />
