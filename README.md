@@ -34,7 +34,7 @@
   - check if there is valid credit left. 
     - condition1: credit has not been passed 90 days since it was created
     - condition2: credit has not been used
-  - if so, use them from oldest dated credit. mark as used and move to the next oldest dateavailable credit. Update credit value.
+  - if so, use them from oldest dated credit. mark as used and move to the next oldest date available credit. Update credit value.
   - if not, throws a custom error.  
 
 - get available credits
