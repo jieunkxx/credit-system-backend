@@ -43,7 +43,7 @@ export interface CreditDB {
   id: number;
   user_id: number;
   value: number;
-  created_at: Date | string;
+  created_at: Date;
 }
 
 export interface UserParams {
@@ -51,7 +51,7 @@ export interface UserParams {
 }
 export interface CreditDTO {
   value?: CreditValue;
-  date: Date | string;
+  date: Date;
 }
 
 export interface CreditRouter {

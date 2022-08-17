@@ -4,8 +4,8 @@ import { resolve } from 'path';
 
 import { serve, setup } from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 const PORT = process.env.PORT || 10010;
 const options = {
   swaggerDefinition: {

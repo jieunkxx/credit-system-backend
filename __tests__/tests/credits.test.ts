@@ -3,12 +3,10 @@ import moment from 'moment';
 import { UserDB, CreditDTO, CreditDB } from '../../src/types/types';
 import creditModel from '../../src/models/credit';
 import creditService from '../../src/services/credit';
+import creditRouter from '../../src/routes/credit';
 import insertQueryFactory from '../data/insertQueryFactory';
-import { moveMessagePortToContext } from 'worker_threads';
 import * as mock from '../data/mock';
-import credit from '../../src/models/credit';
-import e from 'express';
-const dateGenerator = (date: string) => {
+const dateGenerator = (date: Date | string) => {
   return moment(date).format('YYYY-MM-DD');
 };
 
@@ -18,7 +16,7 @@ const createCreditDTO = (value: number, date: string) => {
 
 describe('credit', () => {
   let query, mutate, testClient;
-  let userId: number, creditDTO, value: number, createdAt: Date | string;
+  let userId: number, creditDTO, value: number, createdAt: Date;
   beforeAll(async () => {
     testClient = getTestClient();
     query = testClient.query;
@@ -95,7 +93,7 @@ describe('credit', () => {
       await creditService.useCredit(1, creditDTO);
       const credits: CreditDB[] =
         await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      expect(credits.find(credit => credit.created_at === `2022-05-11`)).toBe(
+      expect(credits.find(credit => dateGenerator(credit.created_at) === dateGenerator(`2022-05-11`))).toBe(
         undefined
       );
     });
@@ -105,7 +103,7 @@ describe('credit', () => {
       await creditService.useCredit(1, creditDTO);
       const credits: CreditDB[] =
         await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      const res = credits.find(credit => credit.created_at === `2022-05-11`);
+      const res = credits.find(credit => dateGenerator(credit.created_at) === dateGenerator('2022-05-11'));
       expect(res?.value).toBe(1);
     });
 
