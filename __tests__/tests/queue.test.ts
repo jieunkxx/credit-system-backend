@@ -1,14 +1,6 @@
-import { Queue } from '../src/class/queue';
-import { CustomError } from '../src/common/class';
-// beforeEach not working
-beforeEach(async () => {
-  const testQueue = new Queue();
-  testQueue.enqueue({ item: 'a' });
-  testQueue.enqueue({ item: 'b' });
-  testQueue.enqueue({ item: 'c' });
-  testQueue.enqueue({ item: 'd' });
-  testQueue.enqueue({ item: 'e' });
-});
+import { Queue } from '../../src/class/queue';
+import { CustomError } from '../../src/class/common';
+
 describe('queue', () => {
   test('constructor', () => {
     const queue = new Queue();

@@ -1,8 +1,8 @@
-const camelToUnderscore = (key: string) => {
+export const camelToUnderscore = (key: string) => {
   return key.replace(/([A-Z])/g, '_$1').toLowerCase();
 };
 
-const convertObjKeysToSnakeCase = (obj: {
+export const convertObjKeysToSnakeCase = (obj: {
   [key in string]: number | string | Date;
 }) => {
   const newObj: { [key in string]: number | string | Date } = {};
@@ -14,7 +14,7 @@ const convertObjKeysToSnakeCase = (obj: {
   return newObj;
 };
 
-const buildSqlParamsForInsert = (obj: {
+export const buildSqlParamsForInsert = (obj: {
   [key in string]: number | string | Date;
 }) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
@@ -32,7 +32,7 @@ const buildSqlParamsForInsert = (obj: {
   return setParams + ') VALUES (' + setValues;
 };
 
-const buildSqlParamsForUpdate = (obj: {
+export const buildSqlParamsForUpdate = (obj: {
   [key in string]: number | string | Date;
 }) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
@@ -44,7 +44,7 @@ const buildSqlParamsForUpdate = (obj: {
   return resultArr.join(', ');
 };
 
-const buildSqlParamsForDelete = (
+export const buildSqlParamsForDelete = (
   obj: { [key in string]: number | string | Date },
   condition: string | null
 ) => {

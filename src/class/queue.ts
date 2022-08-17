@@ -57,7 +57,7 @@ export class Queue<T> {
   // EFFECTS: remove the first item in the queue and returns it
   dequeue() {
     if (this.head == null) {
-      // queue ls empty
+      // queue is empty
       errorGenerator({ message: 'QUEUE_IS_EMPTY', statusCode: 400 });
     }
     const target = this.head as Node<T>;

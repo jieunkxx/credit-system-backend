@@ -1,4 +1,4 @@
-import { CustomError } from '../common/class';
+import { CustomError } from '../class/common';
 import * as type from 'types';
 
 const errorGenerator = (obj: type.CustomErrorSetup) => {
