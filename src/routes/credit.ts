@@ -139,10 +139,10 @@ class CreditRouter extends PathRouter {
   }
 
   // MODIFIES: this
-  // EFFECTS: decrement credit value by credit
-  //          Has enough credit: current credit >= : return 1;
-  //          REFUND PARTIALLY: return (credit - current credit);
-  //          REFUND FAILED: return -1;
+  // EFFECTS: decrement credit value by credit if there is valid. ( < 90days)
+  //          use credits from oldest dated, mark as used and move to the next oldest date.
+  //          update credit value if there is enough credit(current credit >= credit)
+  //          if not enough, throw a custom error
   async useCredit(
     req: Request<
       type.UserParams,
@@ -170,9 +170,9 @@ class CreditRouter extends PathRouter {
 
   // MODIFIES: this
   // EFFECTS: return REFUND STATUS
-  //          REFUND ALL: return 0;
-  //          REFUND PARTIALLY: return (credit - current credit);
-  //          REFUND FAILED: return -1;
+  //          update credit value if (value - current value > 0)
+  //          delete credit data raw if (value - current value === 0)
+  //          throw a custom error if not enough credit left
   async refundCredit(
     req: Request<
       type.UserParams,
