@@ -1,65 +1,97 @@
 import prisma from '../../src/prisma';
-import moment from 'moment';
+import { PrismaPromise } from '.prisma/client';
 import { UserDB, CreditDTO, CreditDB } from '../../src/types/types';
 import creditModel from '../../src/models/credit';
 import creditService from '../../src/services/credit';
 import creditRouter from '../../src/routes/credit';
-import insertQueryFactory from '../data/insertQueryFactory';
+import { selectBuilder } from '../../src/models/queryBuilder';
 import * as mock from '../data/mock';
+import moment from 'moment';
 const dateGenerator = (date: Date | string) => {
-  return new Date(date);
+  return moment(date).format('YYYY-MM-DD');
 };
 
-const createCreditDTO = (value: number, date: Date | string) => {
+const createCreditDTO = (value: number, date: string) => {
   return { value: value, date: dateGenerator(date) };
 };
 
+const truncateTables = async (tables: string[]) => {
+  const transactions: PrismaPromise<any>[] = [];
+  transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`);
+
+  for (const table of tables) {
+    if (table !== '_prisma_migrations') {
+      try {
+        transactions.push(prisma.$executeRawUnsafe(`TRUNCATE ${table};`));
+      } catch (error) {
+        console.log({ error });
+      }
+    }
+  }
+  transactions.push(prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`);
+
+  try {
+    await prisma.$transaction(transactions);
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
 describe('credit', () => {
-  let query, mutate, testClient;
-  let userId: number, creditDTO, value: number, createdAt: Date;
+  let userId: number, creditDTO, value: number;
   beforeAll(async () => {
-    testClient = getTestClient();
-    query = testClient.query;
-    mutate = testClient.query;
+    await truncateTables(['credits', 'users']);
+    await prisma.users.createMany({
+      data: mock.users,
+    });
+    await prisma.credits.createMany({
+      data: mock.credits,
+    });
   });
+
   beforeEach(async () => {
     userId = 1;
     value = 3;
-    await testClient.truncate(['credits', 'users']);
-    const { credits, users } = insertQueryFactory;
-    await testClient.startTransaction([credits, users]);
   });
 
   describe('Get credits', () => {
     test('get all credit', async () => {
-      const credits = await prisma.$queryRaw`SELECT * FROM credits`;
-      const users = await prisma.$queryRaw`SELECT * FROM users`;
+      const credits = await prisma.$queryRawUnsafe(
+        selectBuilder(['id', 'user_id', 'value', 'created_at'], 'credits')
+      );
+      const users = await prisma.$queryRawUnsafe(
+        selectBuilder(['user_name', 'password', 'created_at'], 'users')
+      );
       expect(credits).toStrictEqual(mock.credits);
       expect(users).toStrictEqual(mock.users);
     });
     test('get credit with valid user id', async () => {
-      const credits: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
+      const credits: CreditDB[] = await prisma.$queryRawUnsafe(
+        selectBuilder(['all'], 'credits', { userId: `${userId}` })
+      );
       credits.filter(credit => {
         credit.user_id === 1;
       });
       expect(credits.length).toBe(8);
     });
     test('get credit with invalid user id', async () => {
-      const credits: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      credits.filter(credit => {
+      const credits: CreditDB[] = await prisma.$queryRawUnsafe(
+        selectBuilder(['all'], 'credits', { userId: `${userId}` })
+      );
+
+      const invalid = credits.filter(credit => {
         credit.user_id === 3;
       });
-      expect(credits.length).toBe(0);
+      expect(invalid.length).toBe(0);
     });
   });
 
   describe('add credits', () => {
     let credits;
     beforeEach(async () => {
-      credits =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
+      credits = await prisma.$queryRawUnsafe(
+        selectBuilder(['all'], 'credits', { userId: `${userId}` })
+      );
     });
 
     test('add credit on existed data', async () => {
@@ -67,12 +99,16 @@ describe('credit', () => {
       const creditDTO = createCreditDTO(value, '2022-08-13');
       await creditService.addCredit(1, creditDTO);
       expect(credits.length).toBe(8);
-      const res: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
+      const res: CreditDB[] = await prisma.$queryRawUnsafe(
+        selectBuilder(['id', 'user_id', 'value', 'created_at'], 'credits', {
+          userId: `${userId}`,
+        })
+      );
       expect(res[credits.length - 1]).toStrictEqual({
+        id: credits.length,
         user_id: 1,
         value: 5,
-        created_at: '2022-08-13',
+        created_at: new Date('2022-08-13'),
       });
     });
 
@@ -80,10 +116,16 @@ describe('credit', () => {
       expect(credits.length).toBe(8);
       const creditDTO = createCreditDTO(1, '2022-08-14');
       await creditService.addCredit(1, creditDTO);
-      expect(credits.length).toBe(9);
-      const res: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      expect(res[credits.length - 1]).toStrictEqual(creditDTO);
+      const res: CreditDB[] = await prisma.$queryRawUnsafe(
+        selectBuilder(['value', 'created_at'], 'credits', {
+          userId: `${userId}`,
+        })
+      );
+      expect(res.length).toBe(9);
+      expect(res[res.length - 1]).toStrictEqual({
+        created_at: new Date('2022-08-14'),
+        value: 1,
+      });
     });
   });
 
@@ -91,20 +133,34 @@ describe('credit', () => {
     test('use credit : all', async () => {
       creditDTO = createCreditDTO(4, new Date().toISOString());
       await creditService.useCredit(1, creditDTO);
-      const credits: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      expect(credits.find(credit => dateGenerator(credit.created_at) === dateGenerator(`2022-05-11`))).toBe(
-        undefined
+      const credits: CreditDB[] = await prisma.$queryRawUnsafe(
+        selectBuilder(['all'], 'credits', { userId: `${userId}` })
       );
+      expect(
+        credits.find(
+          credit =>
+            dateGenerator(credit.created_at) === dateGenerator(`2022-05-11`)
+        )
+      ).toBe(undefined);
     });
 
     test('use credit : partial', async () => {
-      creditDTO = createCreditDTO(3, new Date().toISOString());
-      await creditService.useCredit(1, creditDTO);
-      const credits: CreditDB[] =
-        await prisma.$queryRaw`SELECT * FROM credits WHERE user_id=${userId}`;
-      const res = credits.find(credit => dateGenerator(credit.created_at) === dateGenerator('2022-05-11'));
-      expect(res?.value).toBe(1);
+      let res;
+      const userId = 2;
+      const value = 1;
+      const date = moment().format('YYYY-MM-DD');
+      creditDTO = createCreditDTO(value, date);
+      const target = await creditModel.getAvailableCredit(
+        userId,
+        creditDTO.date
+      );
+      const orgVal = target[0].value;
+      const targetId = target[0].id;
+      const expectedVal = orgVal - value;
+      await creditService.useCredit(userId, creditDTO);
+      const query = `SELECT * FROM credits WHERE user_id=${userId} AND id="${targetId}";`;
+      const credit: CreditDB[] = await prisma.$queryRawUnsafe(query);
+      expect(credit[0].value).toBe(expectedVal);
     });
 
     test('use credit : more', async () => {
@@ -157,6 +213,6 @@ describe('credit', () => {
     });
   });
   afterAll(async () => {
-    await testClient.truncate(['credits', 'users']);
-  }
+    await truncateTables(['credits', 'users']);
+  });
 });

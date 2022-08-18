@@ -1,11 +1,13 @@
-export const camelToUnderscore = (key: string) => {
+import errorGenerator from '../utils/errorGenerator';
+
+const camelToUnderscore = (key: string) => {
   return key.replace(/([A-Z])/g, '_$1').toLowerCase();
 };
 
-export const convertObjKeysToSnakeCase = (obj: {
-  [key in string]: number | string | Date;
+const convertObjKeysToSnakeCase = (obj: {
+  [key in string]: number | string | Date | boolean;
 }) => {
-  const newObj: { [key in string]: number | string | Date } = {};
+  const newObj: { [key in string]: number | string | Date | boolean } = {};
   for (const camel in obj) {
     if (obj[camel] !== null) {
       newObj[camelToUnderscore(camel)] = obj[camel];
@@ -14,8 +16,15 @@ export const convertObjKeysToSnakeCase = (obj: {
   return newObj;
 };
 
-export const buildSqlParamsForInsert = (obj: {
-  [key in string]: number | string | Date;
+const buildSqlParamsForSelect = (inquiryColumn: string[]) => {
+  if (inquiryColumn[0] === 'all') {
+    return '*';
+  }
+  return inquiryColumn.join(`,`);
+};
+
+const buildSqlParamsForInsert = (obj: {
+  [key in string]: number | string | Date | boolean;
 }) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
   const setParams: Array<string> = [];
@@ -32,7 +41,7 @@ export const buildSqlParamsForInsert = (obj: {
   return setParams + ') VALUES (' + setValues;
 };
 
-export const buildSqlParamsForUpdate = (obj: {
+const buildSqlParamsForUpdate = (obj: {
   [key in string]: number | string | Date;
 }) => {
   const convertedObj = convertObjKeysToSnakeCase(obj);
@@ -44,7 +53,7 @@ export const buildSqlParamsForUpdate = (obj: {
   return resultArr.join(', ');
 };
 
-export const buildSqlParamsForDelete = (
+const buildSqlParamsForDelete = (
   obj: { [key in string]: number | string | Date },
   condition: string | null
 ) => {
@@ -55,13 +64,52 @@ export const buildSqlParamsForDelete = (
     resultArr.push(`${entry[0]} = "${entry[1]}"`);
   });
   if (condition === 'AND' || condition === 'OR') {
-    resultArr.join(`${condition}`);
+    resultArr.join(` ${condition} `);
   }
   return resultArr;
 };
 
+const buildInquiryOpt = (
+  inquiryOpt: { [key in string]: number | string | Date } = {},
+  condition: string = ''
+) => {
+  let inquiryOptQuery = '';
+  if (
+    Object.keys(inquiryOpt).length > 1 &&
+    condition !== 'AND' &&
+    condition !== 'OR'
+  ) {
+    errorGenerator({
+      message: 'INVALID buildInquiryOpt Condition',
+      statusCode: 400,
+    });
+  }
+  if (Object.keys(inquiryOpt).length !== 0) {
+    const convertedObj = convertObjKeysToSnakeCase(inquiryOpt);
+    const resultArr: Array<string> = [];
+    const entries = Object.entries(convertedObj);
+    entries.forEach(entry => {
+      resultArr.push(`${entry[0]} = "${entry[1]}"`);
+    });
+    inquiryOptQuery = `\nWHERE ` + `${resultArr.join(` ${condition} `)}`;
+  }
+  return inquiryOptQuery;
+};
+export const selectBuilder = (
+  inquiryColumn: string[],
+  table: string,
+  inquiryOpt: { [key in string]: number | string | Date } = {},
+  optCondition: string = ''
+) => {
+  const query =
+    `SELECT ${buildSqlParamsForSelect(inquiryColumn)}\nFROM ${table}` +
+    `${buildInquiryOpt(inquiryOpt, optCondition)}` +
+    `;`;
+  return query;
+};
+
 export const insertBuilder = (
-  data: { [key in string]: number | string | Date },
+  data: { [key in string]: number | string | Date | boolean },
   table: string
 ) => {
   const query = `

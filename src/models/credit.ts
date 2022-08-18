@@ -1,19 +1,26 @@
 import prisma from '../prisma';
 import moment from 'moment';
 import { UserDB, CreditDTO, CreditDB } from 'types';
-import { deleteBuilder, insertBuilder, updateBuilder } from './queryBuilder';
+import {
+  selectBuilder,
+  deleteBuilder,
+  insertBuilder,
+  updateBuilder,
+} from './queryBuilder';
 
 const getCreditById = async (creditId: number) => {
-  const res: Array<CreditDB> = await prisma.$queryRawUnsafe(
-    `SELECT value FROM credits WHERE id=${creditId}`
-  );
+  const query = selectBuilder(['value'], 'credits', { id: `${creditId}` });
+  const res: Array<CreditDB> = await prisma.$queryRawUnsafe(query);
   return res[0];
 };
 
 const getCreditIdByDate = async (userId: number, date: Date | string) => {
-  const query = `
-    SELECT * FROM credits WHERE created_at='${date}' AND user_id=${userId}
-  `;
+  const query = selectBuilder(
+    ['all'],
+    'credits',
+    { created_at: `${date}`, user_id: `${userId}` },
+    'AND'
+  );
   const credit: Array<CreditDB> = await prisma.$queryRawUnsafe(query);
   return credit[0];
 };
@@ -42,7 +49,7 @@ const addCreditOnExist = async (
   await prisma.$queryRawUnsafe(query);
 };
 
-const getAvailableCredit = async (
+export const getAvailableCredit = async (
   userId: UserDB['id'],
   date: Date | string
 ) => {

@@ -4,7 +4,7 @@ import { credits, users } from './mock';
 
 const buildBulkInsertQuery = async (
   table: string,
-  data: { [key in string]: number | string | Date }[]
+  data: { [key in string]: number | string | Date | boolean }[]
 ) => {
   for (const el of data) {
     await insertBuilder(el, table);
