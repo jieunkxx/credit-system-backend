@@ -1,15 +1,6 @@
 import * as types from 'types';
 import errorGenerator from '../utils/errorGenerator';
 
-class Node<T> {
-  item: T;
-  next: Node<T> | null = null;
-  constructor(item: T, next = null) {
-    this.item = item;
-    this.next = next;
-  }
-}
-
 export class Queue<T> {
   head: Node<T> | null = null;
 
@@ -102,4 +93,110 @@ export class Queue<T> {
   get_length() {
     return this.length;
   }
+}
+
+class Node<T> {
+  item: T;
+  next: Node<T> | null = null;
+
+  constructor(private item: T, private next = null) { }
+}
+
+abstract class Queue<T> {
+  abstract enqueue(item: T): void;
+  abstract dequeue(): T;
+  abstract pop(index: number): T;
+  abstract getLength(): number;
+}
+
+export class LinkedQueue extends Queue<T> {
+  head: Node<T> | null = null;
+  tail: Node<T> | null = null;
+  length: number = 0;
+
+  constructor(values?: T[]) {
+    if (values) {
+      values.forEach(value => {
+        this.head = new Node(value);
+        this.tail = this.head;
+        this.length += 1;
+      });
+    }
+  }
+
+  enqueue(item: T) {
+    const node = new Node(item);
+    this.length += 1;
+    if (this.tail) {
+      this.tail.next = node;
+      this.tail = node;
+    }
+    else {
+      this.head = node;
+      this.tail = this.head;
+    }
+  } // O(1)
+
+  dequeue() {
+    if(!this.head) {
+      throw new Error('queue is empty!');
+    }
+    const { item } = this.head;
+    this.head = this.head.next;
+    this.length -= 1;
+    return item;
+  } // O(1)
+
+  // Node1{ item: 'abc', next: Node2 } -> Node2{ item: 'def', next: null}
+  pop(index: number) {
+    if(index >= this.length) {
+      throw new Error('invalid index!');
+    }
+    const prevNode : Node<T> | null = null;
+    const currentNode = this.head;
+    while(index--) {
+      prevNode = currentNode;
+      currentNode = currentNode.next;
+    }
+    const { item } = currentNode;
+    this.length -= 1;
+    if (prevNode)
+      prevNode.next = currentNode.next;
+    return item;
+  } // O(n)
+
+  getLength() {
+    return this.length;
+  } // O(1)
+}
+
+export class ArrayQueue<T> {
+  queue: T[];
+
+  constructor(private queue: T[] = []) {}
+
+  enqueue(item: T) {
+    queue.push(item);
+  } // O(n)
+
+  dequeue() {
+    if(this.queue.length <= 0) {
+      throw new Error('queue is empty!');
+    }
+    const item = queue.shift();
+    return item;
+  } // O(n)
+
+  pop(index: number) {
+    if(index >= this.queue.length) {
+      throw new Error('invalid index!');
+    }
+    const item = queue[index];
+    this.queue = queue.filter((_, idx) => index !== idx);
+    return item;
+  } // O(n)
+
+  getLength() {
+    return this.queue.length;
+  } // O(1)
 }
