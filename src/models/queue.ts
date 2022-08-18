@@ -1,9 +1,6 @@
 import prisma from '../prisma';
 import {
   UserDB,
-  CreditDTO,
-  CreditDB,
-  CreditValue,
   QueueItem,
   QueueIndex,
 } from 'types';

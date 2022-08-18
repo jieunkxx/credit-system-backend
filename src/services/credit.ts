@@ -8,7 +8,7 @@ function isEmpty(obj: Record<string, any>) {
 }
 
 // does not include start date
-const isExpired = (createdAt: Date, expiresAt: Date) => {
+const isExpired = (createdAt: string, expiresAt: string) => {
   const validForUnit = moment(expiresAt).diff(moment(createdAt), 'days');
   return validForUnit > 90;
 };
@@ -72,7 +72,7 @@ const useCredit = async (userId: number, creditDTO: CreditDTO) => {
 };
 
 const refundCredit = async (userId: number, creditDTO: CreditDTO) => {
-  const today = new Date();
+  const today = moment().format('YYYY-MM-DD');
   let msg = null;
   const credit = await creditModel.getCreditIdByDate(userId, creditDTO.date);
   if (isExpired(creditDTO.date, today)) {
