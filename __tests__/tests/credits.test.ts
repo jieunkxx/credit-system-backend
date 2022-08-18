@@ -145,9 +145,8 @@ describe('credit', () => {
     });
 
     test('use credit : partial', async () => {
-      let res;
-      const userId = 2;
-      const value = 1;
+      userId = 2;
+      value = 1;
       const date = moment().format('YYYY-MM-DD');
       creditDTO = createCreditDTO(value, date);
       const target = await creditModel.getAvailableCredit(
