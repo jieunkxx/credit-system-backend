@@ -9,7 +9,6 @@ export const credits = [
   },
   {
     id: 2,
-
     user_id: 1,
     value: 4,
     created_at: new Date('2022-05-11'),
