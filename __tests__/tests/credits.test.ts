@@ -7,6 +7,7 @@ import creditRouter from '../../src/routes/credit';
 import { selectBuilder } from '../../src/models/queryBuilder';
 import * as mock from '../data/mock';
 import moment from 'moment';
+import { ExpressApp } from '../../src/app';
 const dateGenerator = (date: Date | string) => {
   return moment(date).format('YYYY-MM-DD');
 };
@@ -36,6 +37,28 @@ const truncateTables = async (tables: string[]) => {
     console.log({ error });
   }
 };
+
+describe('credit api', () => {
+  let app: ExpressApp;
+
+  beforeAll(() => {}); // 전체 테스트 중 제일 첫 한번
+
+  beforeEach(() => { // 각 테스트 돌기 전에 한번
+    app = new ExpressApp();
+    app.listen(10010);
+  });
+
+  afterAll(() => {});
+
+  afterEach(() => {});
+
+  test('유저가 localhost:3000/abc로 body 값을 보냄', async () => {
+    const result = await fetch('http://localhost:10010', {'Content-Type': '', body: ''});
+    const json = await result.json();
+    expect(result.status).toBe(200);
+    expect(json.message).toBe('abljal;ekjflka');
+  })
+});
 
 describe('credit', () => {
   let userId: number, creditDTO, value: number;
